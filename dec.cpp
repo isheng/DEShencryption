@@ -4,7 +4,7 @@
 #include <vector>
 #include <iterator>
 #include <string>
-
+#include <cstring>
 typedef std::bitset<64> Block;
 
 typedef std::bitset<56> Key ;
@@ -316,28 +316,93 @@ void Hex2Biset(vector<Block> &v,string str)
     }
 }
 
-int main(int argc, char const *argv[])
+string encpryt(string data,string key)
 {
-    string key="12345678";
-    string data="wehenidfasfdsa";
-    string encprytdata="A06DF79283320FB9ADBAC73DD5DAE8EA";
-    string dest="";
-
+    string res="";
     std::vector<Block> vkey;
     std::vector<Block> v;
-    // string2biset(v,data);
-    Hex2Biset(v,encprytdata);
+    string2biset(v,data);
     string2biset(vkey,key);
     Block k=vkey[0];
     Block datatmep;
     for(size_t i=0;i<v.size();i++)
     {
         datatmep=v[i];
-        des(datatmep,k,d);
-        dest+=biset2hex(datatmep);
+        des(datatmep,k,e);
+        res+=biset2hex(datatmep);
     }
+    return res;
+}
 
-    cout<<dest<<endl;
 
+string decrypt(string data,string key)
+{
+    string res;
+    string result;
+    std::vector<Block> vkey;
+    string2biset(vkey,key);
+    Block k=vkey[0];
+    std::vector<Block> v;
+    Hex2Biset(v,data);
+    Block tmp;
+
+    for(std::vector<Block>::iterator it=v.begin();it!=v.end();it++)
+    {
+        tmp=*it;
+        des(tmp,k,d);
+        res+=biset2hex(tmp);
+    }
+    // return res;
+    string stemp;
+    unsigned assci;
+    char c;
+    for(int i=0;i<res.size();i+=2)
+    {   
+        if(i+2>res.size())
+            stemp=res.substr(i,res.size()-i);
+        else
+            stemp=res.substr(i,2);
+
+        stringstream ss;
+        ss<<std::hex<<stemp;
+        ss>>assci;
+        c=assci;
+        result+=c;
+    }
+    return result;
+}
+
+int main(int argc, char const *argv[])
+{
+
+    if (argc !=4)
+    {
+         std::cerr<<"usage:name key data"<<endl;
+         return -1;
+    }
+    string key(argv[1],argv[1]+strlen(argv[1]));
+    string data(argv[2],argv[2]+strlen(argv[2]));   
+    if(argv[3][0]=='1')
+    {
+        cout<<encpryt(data,key)<<endl;
+    }
+    else
+    {
+        cout<<decrypt(data,key)<<endl;
+    }
     return 0;
+
+    // string key="12345678";
+    // string data="7BE88287EA95B1E6";
+    // std::vector<Block> v;
+    // std::vector<Block> v1;
+    // string2biset(v,key);
+    // Hex2Biset(v1,data);
+    // Block k=v[0];
+    // Block bd=v1[0];
+    // cout<<bd<<endl;
+    // // cout<<biset2hex(k)<<endl;
+    // des(bd,k,d);
+    // cout<<biset2hex(bd)<<endl;
+
 }
