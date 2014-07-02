@@ -4,7 +4,7 @@ import wx
 import time
 import wx.stc as stc
 import os
-
+import subprocess
 
 class ColorTextBox(stc.StyledTextCtrl):
     """
@@ -114,9 +114,10 @@ class Frame(wx.Frame):   #2 wx.Frame
             we use its write function to tag the highlight words
         '''
         self.contents0=wx.TextCtrl(self.panel,pos=(635,37))
+        self.contents0.SetValue("12345678")
         self.contents1=wx.TextCtrl(self.panel,style=wx.TE_MULTILINE)  #add the texttctl componment
-        self.contents2=ColorTextBox(self.panel)
-        self.contents2.SetWrapMode(stc.STC_WRAP_WORD)
+        self.contents2=wx.TextCtrl(self.panel,style=wx.TE_MULTILINE)
+        # self.contents2.SetWrapMode(stc.STC_WRAP_WORD)
 
     def BindButton(self):
         '''
@@ -253,17 +254,25 @@ class Frame(wx.Frame):   #2 wx.Frame
 #event handler of the button
     def analysis(self ,event):
         start = time.time()
-        self.statusBasPrint(u'关键词提取中...')
+        self.statusBasPrint(u'encrypt...')
 
-        self.statusBasPrint(u'关键词提取 Successfully')
-        self.contents2.SetReadOnly(True)  #set the contents2 readonly
+        ll=["./dec",self.contents0.GetValue(),self.contents1.GetValue(),"1"]
+
+        # test=["./dec","12345678","12345678","1"]
+
+        # print "test"
+        # print subprocess.check_output(test)
+        self.contents2.SetValue(subprocess.check_output(ll))
+        
+
+        self.statusBasPrint(u'Done Successfully')
         elapsed = (time.time() - start)
         self.Printtime(str(elapsed)+' s')
 
     def category(self,event):
-        pass
-
-
+        ll=["./dec",self.contents0.GetValue(),self.contents1.GetValue(),"0"]
+        strs=subprocess.check_output(ll)
+        self.contents2.SetValue(strs)
 
 
 class App(wx.App):  #5 wx.App
